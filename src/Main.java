@@ -1,29 +1,37 @@
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Vector;
-import java.util.Arrays;
 
 public class Main {
 
     public static void main(String[] args) {
 
+        String[] alphabet= new String[] {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r","s", "t","u", "v","w","x","y","z"};
+        //String[] alphabet= new String[] {"a", "b", "c", "d"};
 
-        //String[] alphabet= new String[] {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r","s", "t","u", "v","w","x","y","z"};
-        String[] alphabet= new String[] {"a", "b", "c", "d"};
+        ArrayList<String> allPossibleWords = AllPossibleWordsGenerator.getAllPossibleWords(5, alphabet);
 
-        Vector<String> input = AllPossibleWordsGenerator.getAllPossibleWords(4, alphabet);
-        System.out.println(input.size());
+        SearchPerformer searchPerformer = new SearchPerformer("hanna", allPossibleWords, 4);
+        searchPerformer.performSearch();
 
-        Vector<String> results = findSubstring("ab", input);
-        for (String item : results)
+        try {
+            System.out.println("time in ms: " + searchPerformer.getTimeNeededForSearchInMS());
+            List<String> searchResults = searchPerformer.getWordsContainingSubstring();
+            System.out.print("Found " + searchResults.size() + " matches");
+            for (String item : searchResults)
+            {
+                System.out.println(item + "\n");
+            }
+        }catch(Exception ex)
         {
-            System.out.println(item + "\n");
+            System.out.println(ex.toString());
         }
+
+
     }
 
-    private static Vector<String> findSubstring(String substring, Vector<String> input) {
-        Vector<String> results = new Vector<String>();
+    private static ArrayList<String> findSubstring(String substring, ArrayList<String> input) {
+        ArrayList<String> results = new ArrayList<String>();
         for (String item : input)
         {
             if(item.startsWith(substring))
