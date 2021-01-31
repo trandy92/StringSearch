@@ -1,3 +1,5 @@
+package StringSearch;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +9,6 @@ import java.util.List;
 public class SearchPerformer {
     private final static int NUMBER_THREADS_DEFAULT =2;
     private int numberThreads;
-    private SearchAlgorithm searchAlgorithm;
     List<String> wordsContainingSubstring=null;
     String wordToSearchFor=null;
     List<String> wordsToSearchThrough;

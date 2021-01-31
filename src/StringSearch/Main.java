@@ -1,3 +1,4 @@
+package StringSearch;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -15,12 +16,12 @@ public class Main {
         searchPerformer.performSearch();
 
         try {
-            System.out.println("time in ms: " + searchPerformer.getTimeNeededForSearchInMS());
+            System.out.printf("time in ms: %s%n",searchPerformer.getTimeNeededForSearchInMS());
             List<String> searchResults = searchPerformer.getWordsContainingSubstring();
-            System.out.print("Found " + searchResults.size() + " matches");
+            System.out.printf("Found %s matches%n",searchResults.size());
             for (String item : searchResults)
             {
-                System.out.println(item + "\n");
+                System.out.printf(item + "\n");
             }
         }catch(Exception ex)
         {
