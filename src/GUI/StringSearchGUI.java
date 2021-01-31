@@ -4,6 +4,8 @@ import StringSearch.AllPossibleWordsGenerator;
 import StringSearch.SearchPerformer;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,7 +16,6 @@ public class StringSearchGUI {
     private static JFrame frame = new JFrame("StringSearchGUI");
     private JTextField wordToSearchForTextField;
     private JPanel panelMain;
-    private JButton searchButton;
 
     private ArrayList<String> allPossibleWords;
     private JList<String> searchResultsJlist;
@@ -24,32 +25,52 @@ public class StringSearchGUI {
 
 
     public StringSearchGUI(){
-        this.allPossibleWords = AllPossibleWordsGenerator.getAllPossibleWords(4, alphabet);
+        allPossibleWords = AllPossibleWordsGenerator.getAllPossibleWords(4, alphabet);
         searchResultsJlist = new JList<String>(listModel);
         searchResultsJlist.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         JScrollPane resultsScrollPane = new JScrollPane(searchResultsJlist);
         panelMain.setLayout(new GridLayout());
         panelMain.add(resultsScrollPane);
-        searchButton.addActionListener(new ActionListener() {
+        wordToSearchForTextField.getDocument().addDocumentListener(new DocumentListener() {
 
             @Override
-            public void actionPerformed(ActionEvent e) {
-                listModel.clear();
-                SearchPerformer searchPerformer = new SearchPerformer(wordToSearchForTextField.getText(), allPossibleWords, 4);
-                searchPerformer.performSearch();
-                try {
-                    List<String> searchResults = searchPerformer.getWordsContainingSubstring();
-                    for(String searchResult : searchResults)
-                    {
-                        listModel.addElement(searchResult);
-                    }
+            public void insertUpdate(DocumentEvent e) {
+                performSearch();
+            }
 
-                } catch (Exception exception) {
-                    exception.printStackTrace();
-                }
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                performSearch();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                performSearch();
             }
         });
     }
+
+    private void performSearch()
+    {
+        listModel.clear();
+        if(wordToSearchForTextField.getText().isEmpty())
+        {
+            return;
+        }
+        SearchPerformer searchPerformer = new SearchPerformer(wordToSearchForTextField.getText(), allPossibleWords, 4);
+        searchPerformer.performSearch();
+        try {
+            List<String> searchResults = searchPerformer.getWordsContainingSubstring();
+            for(String searchResult : searchResults)
+            {
+                listModel.addElement(searchResult);
+            }
+
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
 
         frame.setSize(300,250);
