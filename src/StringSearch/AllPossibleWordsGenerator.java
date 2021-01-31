@@ -1,23 +1,20 @@
 package StringSearch;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Created by andreas.reichel on 28.01.21.
  */
 public class AllPossibleWordsGenerator {
-    static private ArrayList<String> allPossibleWords = new ArrayList<String>();
+    static private List<String> allPossibleWords = new ArrayList<String>();
 
-    static public ArrayList<String> getAllPossibleWords(int wordLength, String[] alphabet)
+    static public List<String> getAllPossibleWords(int wordLength, String[] alphabet)
     {
         List<String> alphabetList= Arrays.asList(alphabet);
 
         StringBuilder newWord= new StringBuilder();
         permute(alphabetList, wordLength, newWord);
-
+        Collections.shuffle(allPossibleWords);
         return allPossibleWords;
     }
 
