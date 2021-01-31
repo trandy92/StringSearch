@@ -7,32 +7,28 @@ import java.util.List;
  * Created by andreas.reichel on 29.01.21.
  */
 public class SearchPerformer {
-    private final static int NUMBER_THREADS_DEFAULT =2;
+    private final static int NUMBER_THREADS_DEFAULT = 2;
     private int numberThreads;
-    List<String> wordsContainingSubstring=null;
-    String wordToSearchFor=null;
+    List<String> wordsContainingSubstring = null;
     List<String> wordsToSearchThrough;
-    Thread[] threadArray;
-    Long timeNeededForSearchInMS=null;
-    boolean searchAlreadyPerformed=false;
+    SearchAlgorithm[] searchAlgorithms;
+    Long timeNeededForSearchInMS = null;
 
-    public SearchPerformer(String wordToSearchFor, List<String> wordsToSearchThrough)
-    {
-        this(wordToSearchFor,wordsToSearchThrough, NUMBER_THREADS_DEFAULT);
+    public SearchPerformer(List<String> wordsToSearchThrough) {
+        this(wordsToSearchThrough, NUMBER_THREADS_DEFAULT);
     }
 
-    public SearchPerformer(String wordToSearchFor, List<String> wordsToSearchThrough, int numberThreads)
-    {
-        this.wordToSearchFor=wordToSearchFor;
-        this.wordsToSearchThrough=wordsToSearchThrough;
-        this.numberThreads=numberThreads;
-        initializeThreadsForPerformingMultithreadedSearch(wordToSearchFor, wordsToSearchThrough, numberThreads);
+    public SearchPerformer(List<String> wordsToSearchThrough, int numberThreads) {
+        this.wordsToSearchThrough = wordsToSearchThrough;
+        this.numberThreads = numberThreads;
+        initializeThreadsForPerformingMultithreadedSearch(wordsToSearchThrough, numberThreads);
     }
 
-    private void initializeThreadsForPerformingMultithreadedSearch(String wordToSearchFor, List<String> wordsToSearchThrough, int numberThreads)
+
+    private void initializeThreadsForPerformingMultithreadedSearch( List<String> wordsToSearchThrough, int numberThreads)
     {
         wordsContainingSubstring = new ArrayList<String>();
-        threadArray = new Thread[numberThreads];
+        searchAlgorithms = new SearchAlgorithm[numberThreads];
 
         int firstIndex = 0;
         int sublistSize = wordsToSearchThrough.size() / numberThreads;
@@ -46,19 +42,25 @@ public class SearchPerformer {
                 endIndexOfSublist = firstIndex + sublistSize;
             }
             List<String> sublist = wordsToSearchThrough.subList(firstIndex, endIndexOfSublist);
-            threadArray[i] = new Thread(new SearchAlgorithm(wordToSearchFor, sublist ,wordsContainingSubstring));
+
+            searchAlgorithms[i] = new SearchAlgorithm(sublist ,wordsContainingSubstring);
             firstIndex = endIndexOfSublist + 1;
         }
     }
 
-    public void performSearch() {
-        if (searchAlreadyPerformed == true) {
-            reset();
-        }
+    public void performSearch(String wordToSearchFor) {
+        timeNeededForSearchInMS = null;
+        wordsContainingSubstring.clear();
+        Thread[] threadArray = new Thread[searchAlgorithms.length];
+
         long startTime = System.currentTimeMillis();
-        for(Thread thread : threadArray)
+        int indexThread =0 ;
+        for(SearchAlgorithm searchAlgorithm : searchAlgorithms)
         {
-            thread.start();
+            searchAlgorithm.setSearchString(wordToSearchFor);
+            threadArray[indexThread] = new Thread(searchAlgorithm);
+            threadArray[indexThread].start();
+            indexThread++;
         }
 
         try {
@@ -69,12 +71,11 @@ public class SearchPerformer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        searchAlreadyPerformed = true;
         timeNeededForSearchInMS = System.currentTimeMillis() - startTime;
     }
 
     public List<String> getWordsContainingSubstring() throws Exception {
-        if(searchAlreadyPerformed==false)
+        if(timeNeededForSearchInMS==null)
         {
             throw new Exception("You need to perform search before getting the search results.");
         }
@@ -82,17 +83,11 @@ public class SearchPerformer {
     }
 
     public long getTimeNeededForSearchInMS() throws Exception {
-        if(searchAlreadyPerformed==false)
+        if(timeNeededForSearchInMS==null)
         {
             throw new Exception("You need to perform search before getting the time needed.");
         }
         return timeNeededForSearchInMS;
     }
-    private void reset()
-    {
-        System.out.println("Reset search");
-        timeNeededForSearchInMS = null;
-        wordsContainingSubstring = new ArrayList<String>();
-        initializeThreadsForPerformingMultithreadedSearch(wordToSearchFor, wordsToSearchThrough, numberThreads);
-    }
+
 }

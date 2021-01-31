@@ -20,13 +20,14 @@ public class StringSearchGUI {
     private JList<String> searchResultsJlist;
     private DefaultListModel listModel = new DefaultListModel();
 
-    SearchPerformer searchPerformer = new SearchPerformer(wordToSearchForTextField.getText(), allPossibleWords, 8);
+    SearchPerformer searchPerformer;
     private final String[] alphabet= new String[] {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r","s", "t","u", "v","w","x","y","z"};
     //String[] alphabet= new String[] {"a", "b", "c", "d"};
 
 
     public StringSearchGUI(){
         allPossibleWords = AllPossibleWordsGenerator.getAllPossibleWords(5, alphabet);
+        searchPerformer = new SearchPerformer(allPossibleWords, 8);
         searchResultsJlist = new JList<String>(listModel);
         searchResultsJlist.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         JScrollPane resultsScrollPane = new JScrollPane(searchResultsJlist);
