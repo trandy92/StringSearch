@@ -32,7 +32,7 @@ public class RabinKarpSearch implements SearchAlgorithm {
             // Check the hash values of current window of text
             // and pattern. If the hash values match then only
             // check for characters one by one
-            if (p == t) {
+            if (p == t && (i == 0 || txt[i-1] == ' ')) {
                 /* Check for characters one by one */
                 for (j = 0; j < M; j++) {
                     if (txt[i+j] != pat[j])

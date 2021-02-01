@@ -26,6 +26,11 @@ public class SearchPerformer {
         initializeThreadsForPerformingMultithreadedSearch();
     }
 
+    public void setAlgorithm(SearchAlgorithm searchAlgorithm)
+    {
+        this.searchAlgorithm = searchAlgorithm;
+        initializeThreadsForPerformingMultithreadedSearch();
+    }
 
     private void initializeThreadsForPerformingMultithreadedSearch()
     {

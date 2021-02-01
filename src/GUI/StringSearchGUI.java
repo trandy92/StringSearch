@@ -1,13 +1,13 @@
 package GUI;
 
-import StringSearch.AllPossibleWordsGenerator;
-import StringSearch.BoyerMooreSearch;
-import StringSearch.SearchPerformer;
+import StringSearch.*;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -22,7 +22,6 @@ public class StringSearchGUI {
     private JPanel panelMain;
     JLabel searchPerformanceLabel;
 
-    private List<String> allPossibleWords;
     private JList<String> searchResultsJlist;
     private DefaultListModel listModel = new DefaultListModel();
 
@@ -41,8 +40,37 @@ public class StringSearchGUI {
             e.printStackTrace();
         }
 
+        String[] algorithms = { "Naive", "Boyer", "Rabin Karp", "KMP" };
 
-        searchPerformer = new SearchPerformer(searchText, 8, new BoyerMooreSearch());
+        JComboBox algorithmList = new JComboBox(algorithms);
+        algorithmList.setSelectedIndex(0);
+        algorithmList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                if(algorithmList.getSelectedItem().equals("Naive"))
+                {
+                    searchPerformer.setAlgorithm(new NaiveStringSearch());
+                }
+                if(algorithmList.getSelectedItem().equals("Boyer"))
+                {
+                    searchPerformer.setAlgorithm(new BoyerMooreSearch());
+                }
+                if(algorithmList.getSelectedItem().equals("Rabin Karp"))
+                {
+                    searchPerformer.setAlgorithm(new RabinKarpSearch());
+                }
+                if(algorithmList.getSelectedItem().equals("KMP"))
+                {
+                    searchPerformer.setAlgorithm(new KMPSearch());
+                }
+                performSearch();
+            }
+        });
+
+
+
+        searchPerformer = new SearchPerformer(searchText, 1, new BoyerMooreSearch());
         searchResultsJlist = new JList<String>(listModel);
         searchResultsJlist.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         JScrollPane resultsScrollPane = new JScrollPane(searchResultsJlist);
@@ -50,7 +78,8 @@ public class StringSearchGUI {
         panelMain.setLayout(new GridLayout());
         panelMain.add(resultsScrollPane);
         panelMain.add(searchPerformanceLabel);
-        wordToSearchForTextField.setText("dd");
+        panelMain.add(algorithmList);
+
         wordToSearchForTextField.getDocument().addDocumentListener(new DocumentListener() {
 
             @Override
@@ -68,6 +97,7 @@ public class StringSearchGUI {
                 performSearch();
             }
         });
+        wordToSearchForTextField.setText("test");
     }
 
     private void performSearch()
