@@ -1,13 +1,19 @@
 package GUI;
 
 import StringSearch.AllPossibleWordsGenerator;
+import StringSearch.BoyerMooreSearch;
 import StringSearch.SearchPerformer;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class StringSearchGUI {
@@ -26,8 +32,17 @@ public class StringSearchGUI {
 
 
     public StringSearchGUI(){
-        allPossibleWords = AllPossibleWordsGenerator.getAllPossibleWords(5, alphabet);
-        searchPerformer = new SearchPerformer(allPossibleWords, 8);
+        List<String> searchText = AllPossibleWordsGenerator.getAllPossibleWords(4, alphabet);
+        try {
+            String bible = Files.readString(Path.of("bible.txt"), StandardCharsets.US_ASCII);
+            String[] bibleWords=bible.split(" ");
+            searchText = Arrays.asList(bibleWords);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        searchPerformer = new SearchPerformer(searchText, 8, new BoyerMooreSearch());
         searchResultsJlist = new JList<String>(listModel);
         searchResultsJlist.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         JScrollPane resultsScrollPane = new JScrollPane(searchResultsJlist);

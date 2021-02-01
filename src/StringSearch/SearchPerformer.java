@@ -11,24 +11,26 @@ public class SearchPerformer {
     private int numberThreads;
     List<String> wordsContainingSubstring = null;
     List<String> wordsToSearchThrough;
-    SearchAlgorithm[] searchAlgorithms;
+    SearchRunnable[] searchAlgorithms;
     Long timeNeededForSearchInMS = null;
+    SearchAlgorithm searchAlgorithm;
 
-    public SearchPerformer(List<String> wordsToSearchThrough) {
-        this(wordsToSearchThrough, NUMBER_THREADS_DEFAULT);
+    public SearchPerformer(List<String> wordsToSearchThrough, SearchAlgorithm searchAlgorithm) {
+        this(wordsToSearchThrough, NUMBER_THREADS_DEFAULT, searchAlgorithm);
     }
 
-    public SearchPerformer(List<String> wordsToSearchThrough, int numberThreads) {
+    public SearchPerformer(List<String> wordsToSearchThrough, int numberThreads, SearchAlgorithm searchAlgorithm) {
         this.wordsToSearchThrough = wordsToSearchThrough;
         this.numberThreads = numberThreads;
-        initializeThreadsForPerformingMultithreadedSearch(wordsToSearchThrough, numberThreads);
+        this.searchAlgorithm = searchAlgorithm;
+        initializeThreadsForPerformingMultithreadedSearch();
     }
 
 
-    private void initializeThreadsForPerformingMultithreadedSearch( List<String> wordsToSearchThrough, int numberThreads)
+    private void initializeThreadsForPerformingMultithreadedSearch()
     {
         wordsContainingSubstring = new ArrayList<String>();
-        searchAlgorithms = new SearchAlgorithm[numberThreads];
+        searchAlgorithms = new SearchRunnable[numberThreads];
 
         int firstIndex = 0;
         int sublistSize = wordsToSearchThrough.size() / numberThreads;
@@ -43,7 +45,7 @@ public class SearchPerformer {
             }
             List<String> sublist = wordsToSearchThrough.subList(firstIndex, endIndexOfSublist);
 
-            searchAlgorithms[i] = new SearchAlgorithm(sublist ,wordsContainingSubstring);
+            searchAlgorithms[i] = new SearchRunnable(sublist ,wordsContainingSubstring,searchAlgorithm);
             firstIndex = endIndexOfSublist + 1;
         }
     }
@@ -55,7 +57,7 @@ public class SearchPerformer {
 
         long startTime = System.currentTimeMillis();
         int indexThread =0 ;
-        for(SearchAlgorithm searchAlgorithm : searchAlgorithms)
+        for(SearchRunnable searchAlgorithm : searchAlgorithms)
         {
             searchAlgorithm.setSearchString(wordToSearchFor);
             threadArray[indexThread] = new Thread(searchAlgorithm);
