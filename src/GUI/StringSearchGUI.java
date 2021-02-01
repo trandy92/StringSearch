@@ -35,6 +35,7 @@ public class StringSearchGUI {
         panelMain.setLayout(new GridLayout());
         panelMain.add(resultsScrollPane);
         panelMain.add(searchPerformanceLabel);
+        wordToSearchForTextField.setText("dd");
         wordToSearchForTextField.getDocument().addDocumentListener(new DocumentListener() {
 
             @Override
