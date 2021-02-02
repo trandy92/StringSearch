@@ -17,7 +17,6 @@ public class KMPSearch implements SearchAlgorithm {
             // Preprocess the pattern (calculate lps[]
             // array)
             computeLPSArray(pat, M, lps);
-
             int i = 0; // index for txt[]
             while (i < N) {
                 if (pat[j] == txt[i]) {
@@ -48,7 +47,8 @@ public class KMPSearch implements SearchAlgorithm {
             }
         }
 
-        void computeLPSArray(char[] pat, int M, int lps[])
+
+    void computeLPSArray(char[] pat, int M, int lps[])
         {
             // length of the previous longest prefix suffix
             int len = 0;

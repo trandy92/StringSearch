@@ -17,68 +17,55 @@ import java.util.Arrays;
 import java.util.List;
 
 public class StringSearchGUI {
+    private final int NUMBER_THREADS=8;
     private static JFrame frame = new JFrame("StringSearchGUI");
+    private final String[] ALGORITHMS = { "Naive", "Boyer", "Rabin Karp", "KMP" };
+    //private final String[] ALPHABET= new String[] {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r","s", "t","u", "v","w","x","y","z"};
+    private String[] ALPHABET = new String[] {"a", "b", "c", "d"};
+    private final int NUMBER_RESULTS_DISPLAY = 200;
+    private final int ALPHABET_LENGTH=4;
+
     private JTextField wordToSearchForTextField;
     private JPanel panelMain;
-    JLabel searchPerformanceLabel;
-    List<String> bibleText;
-    List<String> alphabetText;
-    SearchPerformer bibleSearchPerformer;
-    SearchPerformer alphabetSearchPerformer;
+    private JLabel searchPerformanceLabel;
+    private List<String> bibleText;
+    private List<String> alphabetText;
+    private SearchPerformer bibleSearchPerformer;
+    private SearchPerformer alphabetSearchPerformer;
+    private JComboBox algorithmList;
+    private JRadioButton bibleButton;
+    private JRadioButton alphabetButton;
 
     private JList<String> searchResultsJlist;
     private DefaultListModel listModel = new DefaultListModel();
+    private SearchPerformer searchPerformer;
 
-    SearchPerformer searchPerformer;
-    //private final String[] alphabet= new String[] {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r","s", "t","u", "v","w","x","y","z"};
-    String[] alphabet= new String[] {"a", "b", "c", "d"};
 
 
     public StringSearchGUI(){
-        String[] algorithms = { "Naive", "Boyer", "Rabin Karp", "KMP" };
-        JComboBox algorithmList = new JComboBox(algorithms);
+        panelMain.setLayout(new GridLayout(0,2));
 
-        try {
-            String bible = Files.readString(Path.of("bible.txt"), StandardCharsets.US_ASCII);
-            String[] bibleWords=bible.split(" ");
-            bibleText = Arrays.asList(bibleWords);
+        initAlgorithmSelection();
+        initSearchText();
 
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        alphabetText = AllPossibleWordsGenerator.getAllPossibleWords(8, alphabet);
 
-        bibleSearchPerformer = new SearchPerformer(bibleText, 1, new BoyerMooreSearch());
-        alphabetSearchPerformer = new SearchPerformer(alphabetText, 1, new BoyerMooreSearch());
-        searchPerformer = alphabetSearchPerformer;
+        searchResultsJlist = new JList<String>(listModel);
+        searchResultsJlist.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        JScrollPane resultsScrollPane = new JScrollPane(searchResultsJlist);
+        searchPerformanceLabel = new JLabel();
 
-        algorithmList.setSelectedIndex(0);
-        algorithmList.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        panelMain.add(resultsScrollPane);
+        panelMain.add(searchPerformanceLabel);
+        panelMain.add(algorithmList);
+        panelMain.add(alphabetButton);
+        panelMain.add(bibleButton);
 
-                if(algorithmList.getSelectedItem().equals("Naive"))
-                {
-                    searchPerformer.setAlgorithm(new NaiveStringSearch());
-                }
-                if(algorithmList.getSelectedItem().equals("Boyer"))
-                {
-                    searchPerformer.setAlgorithm(new BoyerMooreSearch());
-                }
-                if(algorithmList.getSelectedItem().equals("Rabin Karp"))
-                {
-                    searchPerformer.setAlgorithm(new RabinKarpSearch());
-                }
-                if(algorithmList.getSelectedItem().equals("KMP"))
-                {
-                    searchPerformer.setAlgorithm(new KMPSearch());
-                }
-                performSearch();
-            }
-        });
+        initWordToSearchForTextField();
+    }
 
-        JRadioButton bibleButton=new JRadioButton("Bibel");
-        JRadioButton alphabetButton=new JRadioButton("Alphabet");
+    private void initSearchText() {
+        bibleButton=new JRadioButton("Bibel");
+        alphabetButton=new JRadioButton("Alphabet");
         bibleButton.setBounds(75,50,100,30);
         alphabetButton.setBounds(75,100,100,30);
         ButtonGroup bg=new ButtonGroup();
@@ -97,37 +84,20 @@ public class StringSearchGUI {
         });
         alphabetButton.setSelected(true);
 
-        searchResultsJlist = new JList<String>(listModel);
-        searchResultsJlist.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        JScrollPane resultsScrollPane = new JScrollPane(searchResultsJlist);
-        searchPerformanceLabel = new JLabel();
-        panelMain.setLayout(new GridLayout());
-        panelMain.add(resultsScrollPane);
-        panelMain.add(searchPerformanceLabel);
-        panelMain.add(algorithmList);
-        panelMain.add(alphabetButton);
-        panelMain.add(bibleButton);
+        try {
+            String bible = Files.readString(Path.of("bible.txt"), StandardCharsets.US_ASCII);
+            String[] bibleWords=bible.split(" ");
+            bibleText = Arrays.asList(bibleWords);
 
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
 
-        wordToSearchForTextField.getDocument().addDocumentListener(new DocumentListener() {
+        alphabetText = AllPossibleWordsGenerator.getAllPossibleWords(ALPHABET_LENGTH, ALPHABET);
 
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                performSearch();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                performSearch();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                performSearch();
-            }
-        });
-
-        wordToSearchForTextField.setText("test");
+        bibleSearchPerformer = new SearchPerformer(bibleText, NUMBER_THREADS, new NaiveStringSearch());
+        alphabetSearchPerformer = new SearchPerformer(alphabetText, NUMBER_THREADS, new NaiveStringSearch());
+        searchPerformer = alphabetSearchPerformer;
     }
 
     private void performSearch()
@@ -146,18 +116,66 @@ public class StringSearchGUI {
             for(String searchResult : searchResults)
             {
                 i++;
-                if(i>200)
+                if(i>NUMBER_RESULTS_DISPLAY)
                 {
                     break;
                 }
                 listModel.addElement(searchResult);
 
             }
-            searchPerformanceLabel.setText(searchPerformer.getTimeNeededForSearchInMS() + " ms");
+            searchPerformanceLabel.setText("Search took " + searchPerformer.getTimeNeededForSearchInMS() + " ms");
         } catch (Exception exception) {
             exception.printStackTrace();
         }
     }
+    private void initWordToSearchForTextField()
+    {
+        wordToSearchForTextField.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                performSearch();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                performSearch();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                performSearch();
+            }
+        });
+
+        wordToSearchForTextField.setText("AAAA");
+    }
+    private void initAlgorithmSelection()
+    {
+        algorithmList = new JComboBox(ALGORITHMS);
+        algorithmList.setSelectedIndex(0);
+        algorithmList.addActionListener(e -> {
+
+            if(algorithmList.getSelectedItem().equals("Naive"))
+            {
+                searchPerformer.setAlgorithm(new NaiveStringSearch());
+            }
+            if(algorithmList.getSelectedItem().equals("Boyer"))
+            {
+                searchPerformer.setAlgorithm(new BoyerMooreSearch());
+            }
+            if(algorithmList.getSelectedItem().equals("Rabin Karp"))
+            {
+                searchPerformer.setAlgorithm(new RabinKarpSearch());
+            }
+            if(algorithmList.getSelectedItem().equals("KMP"))
+            {
+                searchPerformer.setAlgorithm(new KMPSearch());
+            }
+            performSearch();
+        });
+    }
+
 
     public static void main(String[] args) {
         frame.setSize(300,250);

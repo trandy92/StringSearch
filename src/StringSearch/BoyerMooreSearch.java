@@ -28,7 +28,6 @@ public class BoyerMooreSearch implements SearchAlgorithm {
         int n = txt.length;
         StringBuilder foundWord = new StringBuilder();
         int badchar[] = new int[NO_OF_CHARS];
-
     /* Fill the bad character array by calling
     the preprocessing function badCharHeuristic()
     for given pattern */
@@ -43,26 +42,24 @@ public class BoyerMooreSearch implements SearchAlgorithm {
         /* Keep reducing index j of pattern while
         characters of pattern and text are
         matching at this shift s */
-            while(j >= 0 && pat[j] == txt[s + j])
-            {
-                //foundWord.append(txt[s+j]);
-                j--;
-            }
-
+        while(j >= 0 && pat[j] == txt[s + j])
+        {
+            j--;
+        }
 
         /* If the pattern is present at current
         shift, then index j will become -1 after
         the above loop */
-            if (j < 0)
+        if (j < 0)
+        {
+            if(s!= 0 && txt[s-1] == ' ')
             {
-                if(s!= 0 && txt[s-1] == ' ')
+                for(int x = s; txt[x]!=' '; x++)
                 {
-                    for(int x = s; txt[x]!=' '; x++)
-                    {
-                        foundWord.append(txt[x]);
-                    }
-                    results.add(foundWord.toString());
+                    foundWord.append(txt[x]);
                 }
+                results.add(foundWord.toString());
+            }
 
             /* Shift the pattern so that the next
             character in text aligns with the last
@@ -71,7 +68,6 @@ public class BoyerMooreSearch implements SearchAlgorithm {
             the case when pattern occurs at the end
             of text */
                 s += (s + m < n)? m-badchar[txt[s + m]] : 1;
-
             }
 
             else {
@@ -88,4 +84,5 @@ public class BoyerMooreSearch implements SearchAlgorithm {
             }
         }
     }
+
 }

@@ -32,11 +32,9 @@ public class NaiveStringSearch implements SearchAlgorithm {
                 {
                     i++;
                 }
-
             }
             wordFound.setLength(0);
         }
-
     }
 
 }
