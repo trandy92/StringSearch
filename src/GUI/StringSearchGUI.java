@@ -19,9 +19,11 @@ import java.util.List;
 public class StringSearchGUI {
     private final int NUMBER_THREADS=8;
     private static JFrame frame = new JFrame("StringSearchGUI");
+    private final String PATH_TO_BIBLE="bible.txt";
+    private final String SEARCH_INIT_WORD="AA";
     private final String[] ALGORITHMS = { "Naive", "Boyer", "Rabin Karp", "KMP" };
-    //private final String[] ALPHABET= new String[] {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r","s", "t","u", "v","w","x","y","z"};
-    private String[] ALPHABET = new String[] {"a", "b", "c", "d"};
+    private static final String[] ALPHABET= new String[] {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r","s", "t","u", "v","w","x","y","z"};
+    //private String[] ALPHABET = new String[] {"a", "b", "c", "d"};
     private final int NUMBER_RESULTS_DISPLAY = 200;
     private final int ALPHABET_LENGTH=4;
 
@@ -39,8 +41,6 @@ public class StringSearchGUI {
     private JList<String> searchResultsJlist;
     private DefaultListModel listModel = new DefaultListModel();
     private SearchPerformer searchPerformer;
-
-
 
     public StringSearchGUI(){
         panelMain.setLayout(new GridLayout(0,2));
@@ -85,7 +85,7 @@ public class StringSearchGUI {
         alphabetButton.setSelected(true);
 
         try {
-            String bible = Files.readString(Path.of("bible.txt"), StandardCharsets.US_ASCII);
+            String bible = Files.readString(Path.of(PATH_TO_BIBLE), StandardCharsets.US_ASCII);
             String[] bibleWords=bible.split(" ");
             bibleText = Arrays.asList(bibleWords);
 
@@ -123,7 +123,11 @@ public class StringSearchGUI {
                 listModel.addElement(searchResult);
 
             }
-            searchPerformanceLabel.setText("Search took " + searchPerformer.getTimeNeededForSearchInMS() + " ms");
+            StringBuilder performanceInfo = new StringBuilder();
+            performanceInfo.append("<html>Search took " + searchPerformer.getTimeNeededForSearchInMS() + " ms");
+            performanceInfo.append("<br/><br/>Number of Threads: " + NUMBER_THREADS+"</html>");
+
+            searchPerformanceLabel.setText(performanceInfo.toString());
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -148,7 +152,7 @@ public class StringSearchGUI {
             }
         });
 
-        wordToSearchForTextField.setText("AAAA");
+        wordToSearchForTextField.setText(SEARCH_INIT_WORD);
     }
     private void initAlgorithmSelection()
     {
@@ -178,7 +182,7 @@ public class StringSearchGUI {
 
 
     public static void main(String[] args) {
-        frame.setSize(300,250);
+        frame.setSize(400,450);
         frame.setContentPane(new StringSearchGUI().panelMain);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
