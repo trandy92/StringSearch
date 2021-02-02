@@ -25,12 +25,12 @@ public class KMPSearch implements SearchAlgorithm {
                     i++;
                 }
                 if (j == M) {
-                    if(txt[i-(M+1)] == ' ') {
+                    if(i-(M+1) >=0 && txt[i-(M+1)] == ' ') {
                         for (int x = (i - j); txt[x] != ' '; x++) {
                             foundWord.append(txt[x]);
                         }
                         foundWords.add(foundWord.toString());
-                        foundWord.setLength(0);
+
                     }
                     j = lps[j - 1];
                 }
@@ -44,6 +44,7 @@ public class KMPSearch implements SearchAlgorithm {
                     else
                         i = i + 1;
                 }
+                foundWord.setLength(0);
             }
         }
 

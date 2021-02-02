@@ -11,7 +11,7 @@ public class SearchPerformer {
     private int numberThreads;
     List<String> wordsContainingSubstring = null;
     List<String> wordsToSearchThrough;
-    SearchRunnable[] searchAlgorithms;
+    SearchRunnable[] searchRunnables;
     Long timeNeededForSearchInMS = null;
     SearchAlgorithm searchAlgorithm;
 
@@ -35,7 +35,7 @@ public class SearchPerformer {
     private void initializeThreadsForPerformingMultithreadedSearch()
     {
         wordsContainingSubstring = new ArrayList<String>();
-        searchAlgorithms = new SearchRunnable[numberThreads];
+        searchRunnables = new SearchRunnable[numberThreads];
 
         int firstIndex = 0;
         int sublistSize = wordsToSearchThrough.size() / numberThreads;
@@ -50,7 +50,7 @@ public class SearchPerformer {
             }
             List<String> sublist = wordsToSearchThrough.subList(firstIndex, endIndexOfSublist);
 
-            searchAlgorithms[i] = new SearchRunnable(sublist ,wordsContainingSubstring,searchAlgorithm);
+            searchRunnables[i] = new SearchRunnable(sublist ,wordsContainingSubstring,searchAlgorithm);
             firstIndex = endIndexOfSublist + 1;
         }
     }
@@ -58,11 +58,11 @@ public class SearchPerformer {
     public void performSearch(String wordToSearchFor) {
         timeNeededForSearchInMS = null;
         wordsContainingSubstring.clear();
-        Thread[] threadArray = new Thread[searchAlgorithms.length];
+        Thread[] threadArray = new Thread[searchRunnables.length];
 
         long startTime = System.currentTimeMillis();
         int indexThread =0 ;
-        for(SearchRunnable searchAlgorithm : searchAlgorithms)
+        for(SearchRunnable searchAlgorithm : searchRunnables)
         {
             searchAlgorithm.setSearchString(wordToSearchFor);
             threadArray[indexThread] = new Thread(searchAlgorithm);

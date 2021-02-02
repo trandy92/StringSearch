@@ -20,7 +20,8 @@ public class AllPossibleWordsGenerator {
 
     static private void permute(List<String> alphabet, int wordLength, StringBuilder oldWord) {
         if (oldWord.length() >= wordLength) {
-            allPossibleWords.add(oldWord.toString());
+
+            allPossibleWords.add(oldWord.toString().toUpperCase());
             return;
         }
 

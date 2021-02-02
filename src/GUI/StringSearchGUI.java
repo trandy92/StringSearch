@@ -21,28 +21,37 @@ public class StringSearchGUI {
     private JTextField wordToSearchForTextField;
     private JPanel panelMain;
     JLabel searchPerformanceLabel;
+    List<String> bibleText;
+    List<String> alphabetText;
+    SearchPerformer bibleSearchPerformer;
+    SearchPerformer alphabetSearchPerformer;
 
     private JList<String> searchResultsJlist;
     private DefaultListModel listModel = new DefaultListModel();
 
     SearchPerformer searchPerformer;
-    private final String[] alphabet= new String[] {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r","s", "t","u", "v","w","x","y","z"};
-    //String[] alphabet= new String[] {"a", "b", "c", "d"};
+    //private final String[] alphabet= new String[] {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r","s", "t","u", "v","w","x","y","z"};
+    String[] alphabet= new String[] {"a", "b", "c", "d"};
 
 
     public StringSearchGUI(){
-        List<String> searchText = AllPossibleWordsGenerator.getAllPossibleWords(4, alphabet);
+        String[] algorithms = { "Naive", "Boyer", "Rabin Karp", "KMP" };
+        JComboBox algorithmList = new JComboBox(algorithms);
+
         try {
             String bible = Files.readString(Path.of("bible.txt"), StandardCharsets.US_ASCII);
             String[] bibleWords=bible.split(" ");
-            searchText = Arrays.asList(bibleWords);
-        } catch (IOException e) {
-            e.printStackTrace();
+            bibleText = Arrays.asList(bibleWords);
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
+        alphabetText = AllPossibleWordsGenerator.getAllPossibleWords(8, alphabet);
 
-        String[] algorithms = { "Naive", "Boyer", "Rabin Karp", "KMP" };
+        bibleSearchPerformer = new SearchPerformer(bibleText, 1, new BoyerMooreSearch());
+        alphabetSearchPerformer = new SearchPerformer(alphabetText, 1, new BoyerMooreSearch());
+        searchPerformer = alphabetSearchPerformer;
 
-        JComboBox algorithmList = new JComboBox(algorithms);
         algorithmList.setSelectedIndex(0);
         algorithmList.addActionListener(new ActionListener() {
             @Override
@@ -68,9 +77,26 @@ public class StringSearchGUI {
             }
         });
 
+        JRadioButton bibleButton=new JRadioButton("Bibel");
+        JRadioButton alphabetButton=new JRadioButton("Alphabet");
+        bibleButton.setBounds(75,50,100,30);
+        alphabetButton.setBounds(75,100,100,30);
+        ButtonGroup bg=new ButtonGroup();
+        bg.add(bibleButton);
+        bg.add(alphabetButton);
 
 
-        searchPerformer = new SearchPerformer(searchText, 1, new BoyerMooreSearch());
+        alphabetButton.addActionListener(e -> {
+            searchPerformer= alphabetSearchPerformer;
+            performSearch();
+
+        });
+        bibleButton.addActionListener(e -> {
+            searchPerformer= bibleSearchPerformer;
+            performSearch();
+        });
+        alphabetButton.setSelected(true);
+
         searchResultsJlist = new JList<String>(listModel);
         searchResultsJlist.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         JScrollPane resultsScrollPane = new JScrollPane(searchResultsJlist);
@@ -79,6 +105,9 @@ public class StringSearchGUI {
         panelMain.add(resultsScrollPane);
         panelMain.add(searchPerformanceLabel);
         panelMain.add(algorithmList);
+        panelMain.add(alphabetButton);
+        panelMain.add(bibleButton);
+
 
         wordToSearchForTextField.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -97,6 +126,7 @@ public class StringSearchGUI {
                 performSearch();
             }
         });
+
         wordToSearchForTextField.setText("test");
     }
 
