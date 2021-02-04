@@ -9,11 +9,11 @@ import java.util.List;
 public class SearchPerformer {
     private final static int NUMBER_THREADS_DEFAULT = 2;
     private int numberThreads;
-    List<String> wordsContainingSubstring = null;
-    List<String> wordsToSearchThrough;
-    SearchRunnable[] searchRunnables;
-    Long timeNeededForSearchInMS = null;
-    SearchAlgorithm searchAlgorithm;
+    private List<String> wordsContainingSubstring = null;
+    private List<String> wordsToSearchThrough;
+    private SearchRunnable[] searchRunnables;
+    private Long timeNeededForSearchInMS = null;
+    private SearchAlgorithm searchAlgorithm;
 
     public SearchPerformer(List<String> wordsToSearchThrough, SearchAlgorithm searchAlgorithm) {
         this(wordsToSearchThrough, NUMBER_THREADS_DEFAULT, searchAlgorithm);

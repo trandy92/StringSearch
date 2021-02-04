@@ -54,10 +54,11 @@ public class BoyerMooreSearch implements SearchAlgorithm {
         {
             if(s!= 0 && txt[s-1] == ' ')
             {
-                for(int x = s; txt[x]!=' '; x++)
+                for(int x = s; x < txt.length && txt[x]!=' '; x++)
                 {
                     foundWord.append(txt[x]);
                 }
+                foundWord.toString();
                 results.add(foundWord.toString());
             }
 

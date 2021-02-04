@@ -7,6 +7,7 @@ public class KMPSearch implements SearchAlgorithm {
     public void search(char[] txt, char[] pat, List<String> foundWords) {
             int M = pat.length;
             int N = txt.length;
+
             StringBuilder foundWord = new StringBuilder();
 
             // create lps[] that will hold the longest

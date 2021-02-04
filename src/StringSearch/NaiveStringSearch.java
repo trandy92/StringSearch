@@ -20,7 +20,7 @@ public class NaiveStringSearch implements SearchAlgorithm {
             }
             if(j == m)
             {
-                while( text[k]!=' ')
+                while( k < n && text[k]!=' ')
                 {
                     wordFound.append(text[k]);
                     k++;
